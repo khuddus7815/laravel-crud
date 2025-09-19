@@ -6,20 +6,21 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\Auth\CustomerLoginController;
-use App\Http\Controllers\Auth\CustomerRegisterController; // Added this
-use App\Http\Controllers\OrderController; // Added this
+use App\Http\Controllers\Auth\CustomerRegisterController;
+use App\Http\Controllers\OrderController;
+use App\Livewire\User\Checkout;
 
-// Livewire Components
-use App\Livewire\Items;
-use App\Livewire\Coupons;
-use App\Livewire\OrderStatus;
-use App\Livewire\Admin\Orders as AdminOrders; // Using an alias to avoid naming conflicts if you have another 'Orders' class
+// Livewire Components - CORRECTED NAMESPACES
+use App\Livewire\Admin\Items;
+use App\Livewire\Admin\Coupons;
+use App\Livewire\User\OrderStatus; // Corrected from App\Livewire\OrderStatus
+use App\Livewire\Admin\Orders as AdminOrders;
 
 // --- Public & Shop Routes ---
 
 // Make the shop the new home page
 Route::get('/', [ShopController::class, 'index'])->name('shop.index');
-Route::get('/checkout', [ShopController::class, 'checkout'])->name('checkout');
+Route::get('/checkout', Checkout::class)->name('checkout'); // <-- CHANGE THIS LINE
 Route::get('/order/{order:order_number}', [ShopController::class, 'success'])->name('order.success');
 
 
@@ -27,16 +28,13 @@ Route::get('/order/{order:order_number}', [ShopController::class, 'success'])->n
 Route::get('customer/login', [CustomerLoginController::class, 'create'])->name('customer.login');
 Route::post('customer/login', [CustomerLoginController::class, 'store']);
 Route::post('customer/logout', [CustomerLoginController::class, 'destroy'])->name('customer.logout');
-Route::get('customer/register', [CustomerRegisterController::class, 'create'])->name('customer.register'); // Assuming you have a 'create' method
+Route::get('customer/register', [CustomerRegisterController::class, 'create'])->name('customer.register');
 Route::post('customer/register', [CustomerRegisterController::class, 'store']);
 
 
 // --- Authenticated Customer Routes ---
 Route::middleware('auth:customer')->group(function () {
-    // This is the single, correct route for the customer's order status page
     Route::get('/my-orders', OrderStatus::class)->name('order.status');
-
-    // These routes can stay if they handle specific actions from within the order status page
     Route::patch('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('order.cancel');
     Route::patch('/orders/{order}/return', [OrderController::class, 'return'])->name('order.return');
 });

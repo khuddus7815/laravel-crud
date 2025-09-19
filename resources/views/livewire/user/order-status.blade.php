@@ -133,12 +133,15 @@
                     <div class="mt-6 border-t pt-4">
                         <h3 class="font-semibold text-lg mb-2">Items</h3>
                         <ul class="space-y-2">
-                            @foreach($order->items as $item)
-                                <li class="flex justify-between">
-                                    <span>{{ $item->name }} (x{{ $item->pivot->quantity }})</span>
-                                    <span>₹{{ number_format($item->pivot->price * $item->pivot->quantity, 2) }}</span>
-                                </li>
-                            @endforeach
+                           @foreach($order->items as $orderItem)
+    <li class="flex justify-between">
+        {{-- Access the item's name through the relationship --}}
+        <span>{{ $orderItem->item->name }} (x{{ $orderItem->quantity }})</span>
+
+        {{-- The price and quantity are directly on the orderItem --}}
+        <span>₹{{ number_format($orderItem->price * $orderItem->quantity, 2) }}</span>
+    </li>
+@endforeach
                         </ul>
                     </div>
 

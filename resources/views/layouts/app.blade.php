@@ -51,7 +51,7 @@
                             x-transition:leave-end="opacity-0"
                         >
                             @auth('web')
-                                @livewire('categories')
+                        @livewire('admin.categories')
                             @endauth
                         </div>
                     </div>
