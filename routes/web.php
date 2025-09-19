@@ -9,6 +9,8 @@ use App\Http\Controllers\Auth\CustomerLoginController;
 use App\Http\Controllers\Auth\CustomerRegisterController;
 use App\Http\Controllers\OrderController;
 use App\Livewire\User\Checkout;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\Api\OrderController as ApiOrderController;
 
 // Livewire Components - CORRECTED NAMESPACES
 use App\Livewire\Admin\Items;
@@ -20,7 +22,11 @@ use App\Livewire\Admin\Orders as AdminOrders;
 
 // Make the shop the new home page
 Route::get('/', [ShopController::class, 'index'])->name('shop.index');
-Route::get('/checkout', Checkout::class)->name('checkout'); // <-- CHANGE THIS LINE
+Route::get('/checkout', Checkout::class)->name('checkout'); 
+Route::apiResource('orders', OrderController::class);
+Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
+
+
 Route::get('/order/{order:order_number}', [ShopController::class, 'success'])->name('order.success');
 
 

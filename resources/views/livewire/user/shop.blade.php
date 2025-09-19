@@ -88,17 +88,17 @@
                     </div>
                 </template>
             </div>
-            <div class="p-4 border-t">
-                <div class="flex justify-between items-center font-semibold text-lg">
-                    <span>Total</span>
-                    <span x-text="`₹${cartTotal}`"></span>
+                <div class="p-4 border-t">
+                    <div class="flex justify-between items-center font-semibold text-lg">
+                        <span>Total</span>
+                        <span x-text="`₹${cartTotal}`"></span>
+                    </div>
+                    <button @click="window.location.href='{{ route('checkout') }}'"
+                            :disabled="Object.values(cart).length === 0"
+                            class="w-full mt-4 bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 disabled:bg-gray-400">
+                        Checkout
+                    </button>
                 </div>
-                <button @click="window.location.href='{{ route('checkout') }}'"
-                        :disabled="Object.values(cart).length === 0"
-                        class="w-full mt-4 bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 disabled:bg-gray-400">
-                    Checkout
-                </button>
-            </div>
         </div>
 
         
