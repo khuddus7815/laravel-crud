@@ -4,30 +4,25 @@ use Illuminate\Support\Facades\Route;
 
 // Controllers
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\ShopController;
 use App\Http\Controllers\Auth\CustomerLoginController;
 use App\Http\Controllers\Auth\CustomerRegisterController;
-use App\Http\Controllers\OrderController;
-use App\Livewire\User\Checkout;
-use App\Http\Controllers\CartController;
-use App\Http\Controllers\Api\OrderController as ApiOrderController;
 
 // Livewire Components - CORRECTED NAMESPACES
 use App\Livewire\Admin\Items;
 use App\Livewire\Admin\Coupons;
 use App\Livewire\User\OrderStatus; // Corrected from App\Livewire\OrderStatus
 use App\Livewire\Admin\Orders as AdminOrders;
+use App\Livewire\User\Shop; // <-- Make sure this is imported
 
 // --- Public & Shop Routes ---
 
 // Make the shop the new home page
-Route::get('/', [ShopController::class, 'index'])->name('shop.index');
-Route::get('/checkout', Checkout::class)->name('checkout'); 
-Route::apiResource('orders', OrderController::class);
-Route::post('/cart/update', [CartController::class, 'update'])->name('cart.update');
+Route::get('/checkout', function () {
+    return view('checkout');
+})->name('checkout');
 
 
-Route::get('/order/{order:order_number}', [ShopController::class, 'success'])->name('order.success');
+Route::get('/', Shop::class)->name('shop.index');
 
 
 // --- Customer Authentication Routes ---
@@ -41,8 +36,6 @@ Route::post('customer/register', [CustomerRegisterController::class, 'store']);
 // --- Authenticated Customer Routes ---
 Route::middleware('auth:customer')->group(function () {
     Route::get('/my-orders', OrderStatus::class)->name('order.status');
-    Route::patch('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('order.cancel');
-    Route::patch('/orders/{order}/return', [OrderController::class, 'return'])->name('order.return');
 });
 
 

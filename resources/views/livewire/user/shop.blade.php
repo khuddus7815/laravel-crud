@@ -1,4 +1,3 @@
-{{-- resources/views/shop.blade.php --}}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,9 +21,7 @@
         <header class="flex justify-between items-center mb-8 pb-4 border-b">
     <h1 class="text-4xl font-bold text-gray-800">E-Commerce Store</h1>
     <div class="flex items-center space-x-4">
-        {{-- Customer Authentication Links --}}
         @if (Auth::guard('customer')->check())
-            {{-- Show customer's name and a logout form if they are logged in --}}
                         <span class="text-sm font-medium text-gray-800">Hi, {{ Auth::guard('customer')->user()->name }}</span>
             <a href="{{ route('order.status') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900">My Orders</a>
             <form method="POST" action="{{ route('customer.logout') }}">
@@ -36,18 +33,14 @@
                 </a>
             </form>
         @else
-            {{-- Show customer login/register links if they are a guest --}}
             <a href="{{ route('customer.login') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900">Customer Login</a>
             <a href="{{ route('customer.register') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900">Register</a>
         @endif
 
-        {{-- Separator --}}
         <span class="text-gray-300">|</span>
 
-        {{-- Admin Login Link --}}
         <a href="{{ route('login') }}" class="text-sm font-medium text-gray-600 hover:text-gray-900">Admin Login</a>
         
-        {{-- Cart Button --}}
         <button @click="cartOpen = !cartOpen" class="relative">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
             <span class="absolute -top-2 -right-2 bg-indigo-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center" x-text="cartCount">0</span>
@@ -55,7 +48,6 @@
     </div>
 </header>
 
-        {{-- Shopping Cart Sidebar --}}
         <div x-show="cartOpen" @click.away="cartOpen = false" class="fixed inset-0 bg-black bg-opacity-50 z-40" x-cloak></div>
         <div x-show="cartOpen"
              x-transition:enter="transition ease-out duration-300"
@@ -102,8 +94,6 @@
         </div>
 
         
-        {{-- Product Grid --}}
-        {{-- resources/views/shop.blade.php (Product Grid Section Only) --}}
 <main>
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
         @foreach ($items as $item)
@@ -119,9 +109,7 @@
                         <p class="text-sm text-gray-500 mt-2">{{ Str::limit($item->description, 50) }}</p>
                     </div>
 
-                    {{-- === CORRECTED DYNAMIC BUTTON LOGIC STARTS HERE === --}}
                     <div class="mt-4">
-                        {{-- Show "Add to Cart" button IF the item ID is NOT a key in the cart object --}}
                         <template x-if="!cart[{{ $item->id }}]">
                             <button
                                 @click="addToCart({ id: {{ $item->id }}, name: '{{ addslashes($item->name) }}', price: {{ $item->price }}, image_url: '{{ $imageUrl }}' })"
@@ -130,18 +118,14 @@
                             </button>
                         </template>
 
-                        {{-- Show Quantity Stepper IF the item ID IS a key in the cart object --}}
                         <template x-if="cart[{{ $item->id }}]">
                             <div class="flex items-center justify-between w-full border border-gray-300 rounded-lg">
-                                {{-- Use your existing updateQuantity function --}}
                                 <button @click="updateQuantity({{ $item->id }}, cart[{{ $item->id }}].quantity - 1)"
                                     class="px-4 py-1 text-xl font-bold text-gray-700 hover:bg-gray-100 rounded-l-lg focus:outline-none">
                                     -
                                 </button>
-                                {{-- Display the quantity from the cart object --}}
                                 <span x-text="cart[{{ $item->id }}].quantity"
                                     class="font-bold text-lg text-gray-800"></span>
-                                {{-- Use your existing updateQuantity function --}}
                                 <button @click="updateQuantity({{ $item->id }}, cart[{{ $item->id }}].quantity + 1)"
                                     class="px-4 py-1 text-xl font-bold text-gray-700 hover:bg-gray-100 rounded-r-lg focus:outline-none">
                                     +
@@ -149,7 +133,6 @@
                             </div>
                         </template>
                     </div>
-                    {{-- === CORRECTED DYNAMIC BUTTON LOGIC ENDS HERE === --}}
 
                 </div>
             </div>
@@ -247,8 +230,8 @@
                     .then(data => {
                         console.log('Order successful:', data);
                         this.checkoutSuccess = true;
-                        this.cart = {}; // Clear the cart
-                        this.customer = { name: '', email: '' }; // Clear customer details
+                        this.cart = {};
+                        this.customer = { name: '', email: '' };
                     })
                     .catch(error => {
                         console.error('Order failed:', error);
