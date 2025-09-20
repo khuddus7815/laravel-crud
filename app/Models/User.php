@@ -28,6 +28,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'is_admin',
     ];
 
     /**
@@ -65,7 +66,7 @@ class User extends Authenticatable
     }
 
     // 3. ADD THIS RELATIONSHIP FOR ORDERS
-    public function orders(): HasMany
+    public function orders()
     {
         return $this->hasMany(Order::class);
     }

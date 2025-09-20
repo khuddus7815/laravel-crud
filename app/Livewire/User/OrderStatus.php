@@ -1,13 +1,11 @@
 <?php
 
-namespace App\Livewire\User; // <-- UPDATED NAMESPACE
+namespace App\Livewire\User;
 
 use App\Models\Order;
-use Livewire\Component;
 use Illuminate\Support\Facades\Auth;
-use Livewire\Attributes\Layout;
+use Livewire\Component;
 
-#[Layout('layouts.guest')] // You can create a specific customer layout or use the guest one
 class OrderStatus extends Component
 {
     public $orders;
@@ -19,13 +17,17 @@ class OrderStatus extends Component
 
     public function loadOrders()
     {
-        $this->orders = Auth::guard('customer')->user()->orders()->with('items.item')->latest()->get();
+        if (Auth::check()) {
+            $this->orders = Auth::user()->orders()->with('items.item')->latest()->get();
+        } else {
+            $this->orders = collect(); // Return an empty collection if the user is not logged in
+        }
     }
 
     public function cancelOrder($orderId)
     {
         $order = Order::find($orderId);
-        if ($order && $order->customer_id == Auth::guard('customer')->id() && $order->status == 'pending') {
+        if ($order && $order->user_id == Auth::id() && $order->status == 'pending') {
             $order->status = 'cancelled';
             $order->save();
             $this->loadOrders();
@@ -35,13 +37,17 @@ class OrderStatus extends Component
     public function returnOrder($orderId)
     {
         $order = Order::find($orderId);
-        if ($order && $order->customer_id == Auth::guard('customer')->id() && $order->status == 'delivered') {
+        if ($order && $order->user_id == Auth::id() && $order->status == 'delivered') {
             $order->status = 'returned';
             $order->save();
             $this->loadOrders();
         }
     }
 
+    /**
+     * Render the component.
+     * This renders the view as a complete, standalone HTML page without any layout.
+     */
     public function render()
     {
         return view('livewire.user.order-status');

@@ -33,29 +33,27 @@ public function createCustomer(): View
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): RedirectResponse
-    {
-        $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+    // app/Http/Controllers/Auth/RegisteredUserController.php
 
-        $user = User::create([
+public function store(Request $request): RedirectResponse
+{
+    $request->validate([
+        'name' => ['required', 'string', 'max:255'],
+        'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+        'password' => ['required', 'confirmed', Rules\Password::defaults()],
+    ]);
+
+    $user = User::create([
         'name' => $request->name,
         'email' => $request->email,
         'password' => Hash::make($request->password),
+        'is_admin' => false, // Set new users as non-admins by default
     ]);
 
     event(new Registered($user));
 
     Auth::login($user);
 
-    // Check if the user is registering from the customer registration page
-    if ($request->routeIs('customer.register.store')) {
-        return redirect(route('shop.index', absolute: false));
-    }
-
-    return redirect(route('dashboard', absolute: false));
+    return redirect(route('shop.index')); // Redirect all new users to the shop
 }
 }

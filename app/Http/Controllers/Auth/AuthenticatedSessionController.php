@@ -37,12 +37,11 @@ public function store(LoginRequest $request): RedirectResponse
 
     $request->session()->regenerate();
 
-    // Check if the user is logging in from the customer login page
-    if ($request->routeIs('customer.login.store')) {
-        return redirect()->intended(route('shop.index', absolute: false));
+    if (Auth::user()->is_admin) {
+        return redirect()->intended(route('dashboard'));
     }
 
-    return redirect()->intended(route('dashboard', absolute: false));
+    return redirect()->intended(route('shop.index'));
 }
     /**
      * Destroy an authenticated session.
