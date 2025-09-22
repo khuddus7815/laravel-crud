@@ -15,12 +15,20 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                     <x-nav-link :href="route('coupons')" :active="request()->routeIs('coupons')">
-        {{ __('Coupons') }}
-    </x-nav-link>
+                    <x-nav-link :href="route('coupons')" :active="request()->routeIs('coupons')">
+                        {{ __('Coupons') }}
+                    </x-nav-link>
                     <x-nav-link :href="route('admin.orders')" :active="request()->routeIs('admin.orders')">
                         {{ __('Orders') }}
                     </x-nav-link>
+                    
+                    {{-- START: Super Admin Link --}}
+                    @if(Auth::check() && Auth::user()->is_admin == 2)
+                        <x-nav-link :href="route('super.admin.dashboard')" :active="request()->routeIs('super.admin.dashboard')">
+                            {{ __('Super Admin') }}
+                        </x-nav-link>
+                    @endif
+                    {{-- END: Super Admin Link --}}
                 </div>
             </div>
 
@@ -76,6 +84,20 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('coupons')" :active="request()->routeIs('coupons')">
+                {{ __('Coupons') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('admin.orders')" :active="request()->routeIs('admin.orders')">
+                {{ __('Orders') }}
+            </x-responsive-nav-link>
+
+            {{-- START: Responsive Super Admin Link --}}
+            @if(Auth::check() && Auth::user()->is_admin == 2)
+                <x-responsive-nav-link :href="route('super.admin.dashboard')" :active="request()->routeIs('super.admin.dashboard')">
+                    {{ __('Super Admin') }}
+                </x-responsive-nav-link>
+            @endif
+            {{-- END: Responsive Super Admin Link --}}
         </div>
 
         <!-- Responsive Settings Options -->

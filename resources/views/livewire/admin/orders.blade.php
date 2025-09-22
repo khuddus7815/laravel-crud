@@ -16,20 +16,71 @@
                         </div>
                     @endif
 
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-sm text-gray-600">Show</span>
+                            <select wire:model.live="perPage" class="border-gray-300 rounded-md shadow-sm text-sm">
+                                <option>10</option>
+                                <option>25</option>
+                                <option>50</option>
+                                <option>100</option>
+                            </select>
+                             <span class="text-sm text-gray-600">entries</span>
+                        </div>
+                        <div>
+                            <input wire:model.live.debounce.300ms="search" type="text" class="border-gray-300 rounded-md shadow-sm text-sm" placeholder="Search orders...">
+                        </div>
+                    </div>
+
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order #</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <button wire:click="sortBy('order_number')" class="flex items-center">
+                                            Order #
+                                            @if($sortField === 'order_number')
+                                                <span class="ml-1">{{ $sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                                            @endif
+                                        </button>
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <button wire:click="sortBy('customer_name')" class="flex items-center">
+                                            Customer
+                                            @if($sortField === 'customer_name')
+                                                <span class="ml-1">{{ $sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                                            @endif
+                                        </button>
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <button wire:click="sortBy('total')" class="flex items-center">
+                                            Total
+                                             @if($sortField === 'total')
+                                                <span class="ml-1">{{ $sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                                            @endif
+                                        </button>
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <button wire:click="sortBy('status')" class="flex items-center">
+                                            Status
+                                            @if($sortField === 'status')
+                                                <span class="ml-1">{{ $sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                                            @endif
+                                        </button>
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <button wire:click="sortBy('created_at')" class="flex items-center">
+                                            Date
+                                            @if($sortField === 'created_at')
+                                                <span class="ml-1">{{ $sortDirection === 'asc' ? '▲' : '▼' }}</span>
+                                            @endif
+                                        </button>
+                                    </th>
                                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                                 </tr>
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200">
-                                @foreach ($orders as $order)
+                                @forelse ($orders as $order)
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $order->order_number }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $order->customer_name }}</td>
@@ -55,12 +106,17 @@
                                                     <option value="delivered">Delivered</option>
                                                     <option value="cancelled">Cancelled</option>
                                                 </select>
-                                                {{-- The FIX is here: changed wire:click to @click and called $wire --}}
                                                 <button @click="$wire.updateStatus({{ $order->id }}, newStatus)" class="px-3 py-1 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 text-xs">Update</button>
                                             </div>
                                         </td>
                                     </tr>
-                                @endforeach
+                                @empty
+                                    <tr>
+                                        <td colspan="6" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
+                                            No orders found.
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>

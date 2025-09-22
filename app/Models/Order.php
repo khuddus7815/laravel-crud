@@ -11,7 +11,7 @@ class Order extends Model
 
     protected $fillable = [
         'order_number',
-        'customer_id',
+        'user_id', // This was correctly changed from customer_id
         'customer_name',
         'customer_email',
         'total',
@@ -19,7 +19,7 @@ class Order extends Model
         'status',
     ];
 
-    public function items()
+    public function orderItems()
     {
         return $this->hasMany(OrderItem::class);
     }

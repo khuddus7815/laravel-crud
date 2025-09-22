@@ -43,6 +43,7 @@ class Coupons extends Component
         ]);
 
         Coupon::updateOrCreate(['id' => $this->couponId], [
+            'user_id' => auth()->id(),
             'code' => strtoupper($this->code),
             'type' => $this->type,
             'value' => $this->value,
@@ -77,7 +78,7 @@ class Coupons extends Component
     public function render()
     {
         return view('livewire.admin.coupons', [ // <-- Point to the correct view
-            'coupons' => Coupon::latest()->paginate(10),
+            'coupons' => Coupon::where('user_id', auth()->id())->latest()->paginate(10),
         ]);
     }
 }

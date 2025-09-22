@@ -99,7 +99,7 @@ class Items extends Component
 
     public function edit($id)
     {
-        $item = Item::findOrFail($id);
+        $item = Item::where('user_id', auth()->id())->findOrFail($id);
         $this->itemId = $item->id;
         $this->name = $item->name;
         $this->description = $item->description;
@@ -110,7 +110,7 @@ class Items extends Component
 
     public function view($id)
     {
-        $this->viewingItem = Item::findOrFail($id);
+        $this->viewingItem = Item::where('user_id', auth()->id())->findOrFail($id);
         $this->showViewModal = true;
     }
 
@@ -181,7 +181,7 @@ class Items extends Component
 
     public function confirmDelete()
     {
-        $item = Item::findOrFail($this->itemId);
+        $item = Item::where('user_id', auth()->id())->findOrFail($this->itemId);
 
         if ($item->image_path) {
             Storage::disk('public')->delete($item->image_path);

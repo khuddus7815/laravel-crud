@@ -20,7 +20,7 @@ class OrderStatusController extends Controller
             return view('my-orders', ['orders' => collect()]);
         }
 
-        $orders = Auth::user()->orders()->with('items.item')->latest()->get();
+        $orders = Auth::user()->orders()->with('orderItems.item')->latest()->get();
 
         return view('my-orders', ['orders' => $orders]);
     }

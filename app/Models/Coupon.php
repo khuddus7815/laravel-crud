@@ -19,6 +19,7 @@ class Coupon extends Model
         'type',
         'value',
         'expires_at',
+        'user_id',
     ];
 
     /**
@@ -29,4 +30,20 @@ class Coupon extends Model
     protected $casts = [
         'expires_at' => 'datetime',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function discount($total)
+    {
+        if ($this->type == 'fixed') {
+            return $this->value;
+        } elseif ($this->type == 'percent') {
+            return round(($this->value / 100) * $total);
+        } else {
+            return 0;
+        }
+    }
 }

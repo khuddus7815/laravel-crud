@@ -3,88 +3,87 @@
 namespace App\Livewire\User;
 
 use App\Models\Item;
+use App\Models\Cart;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\Attributes\Layout;
-use Livewire\Attributes\Computed;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
+use Livewire\Attributes\On;
 
 #[Layout('layouts.shop')]
 class Shop extends Component
 {
     public $items = [];
-    public $cart = [];
-    public $cartOpen = false;
+    public $cartItems = [];
 
     public function mount()
     {
         $this->items = Item::all();
-        $this->cart = session('cart', []);
+        $this->loadCart();
     }
 
-    public function toggleCart()
+    /**
+     * Listen for the 'cart-updated' event to keep this component's
+     * cart state in sync with the rest of the application.
+     */
+    #[On('cart-updated')]
+    public function loadCart()
     {
-        $this->cartOpen = !$this->cartOpen;
+        if (Auth::check()) {
+            $this->cartItems = Auth::user()->cartItems
+                ->keyBy('item_id') // Use item_id as the key for easy lookup
+                ->toArray();
+        }
     }
 
-    #[Computed]
-    public function cartCount()
-    {
-        return collect($this->cart)->sum('quantity');
-    }
-
-    #[Computed]
-    public function cartTotal()
-    {
-        return collect($this->cart)->sum(function ($item) {
-            return $item['price'] * $item['quantity'];
-        });
-    }
-
+    /**
+     * This method now only adds the item if it's not already in the cart.
+     */
     public function addToCart($itemId)
     {
-        $item = Item::find($itemId);
-        if (!$item) {
-            return;
+        if (!Auth::check()) {
+            return redirect()->route('login');
         }
 
-        if (isset($this->cart[$itemId])) {
-            $this->cart[$itemId]['quantity']++;
-        } else {
-            $this->cart[$itemId] = [
-                'id' => $item->id,
-                'name' => $item->name,
-                'price' => $item->price,
-                'image_url' => $item->image_path ? Storage::url($item->image_path) : 'https://via.placeholder.com/300',
+        if (!isset($this->cartItems[$itemId])) {
+            Cart::create([
+                'user_id' => Auth::id(),
+                'item_id' => $itemId,
                 'quantity' => 1,
-            ];
-        }
+            ]);
 
-        session(['cart' => $this->cart]);
-    }
-
-    public function removeFromCart($itemId)
-    {
-        unset($this->cart[$itemId]);
-        session(['cart' => $this->cart]);
-    }
-
-    public function updateQuantity($itemId, $quantity)
-    {
-        if ($quantity < 1) {
-            $this->removeFromCart($itemId);
-            return;
-        }
-
-        if (isset($this->cart[$itemId])) {
-            $this->cart[$itemId]['quantity'] = $quantity;
-            session(['cart' => $this->cart]);
+            $this->loadCart();
+            $this->dispatch('cart-updated');
         }
     }
-    
-    public function checkout()
+
+    /**
+     * Increments the quantity of an item in the cart.
+     */
+    public function increment($itemId)
     {
-        return redirect()->route('checkout');
+        $cartItem = Cart::where('user_id', Auth::id())->where('item_id', $itemId)->first();
+        if ($cartItem) {
+            $cartItem->increment('quantity');
+            $this->loadCart();
+            $this->dispatch('cart-updated');
+        }
+    }
+
+    /**
+     * Decrements the quantity or removes the item if quantity is 1.
+     */
+    public function decrement($itemId)
+    {
+        $cartItem = Cart::where('user_id', Auth::id())->where('item_id', $itemId)->first();
+        if ($cartItem) {
+            if ($cartItem->quantity > 1) {
+                $cartItem->decrement('quantity');
+            } else {
+                $cartItem->delete();
+            }
+            $this->loadCart();
+            $this->dispatch('cart-updated');
+        }
     }
 
     public function render()

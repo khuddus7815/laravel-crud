@@ -72,7 +72,6 @@ return [
     // ADD THIS NEW PROVIDER
     'customers' => [
         'driver' => 'eloquent',
-        'model' => App\Models\Customer::class,
     ],
 ],
  /*

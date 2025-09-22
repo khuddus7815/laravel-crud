@@ -6,23 +6,19 @@ use App\Livewire\Admin\Items;
 use App\Livewire\Admin\Coupons;
 use App\Livewire\Admin\Orders as AdminOrders;
 use App\Livewire\User\Shop;
-use App\Livewire\User\OrderStatus;
 use App\Http\Controllers\OrderStatusController;
+use App\Livewire\User\Checkout;
+use App\Livewire\SuperAdminDashboard;
 
 // --- Public & Shop Routes ---
 Route::get('/', Shop::class)->name('shop.index');
-Route::get('/checkout', function () {
-    return view('checkout');
-})->name('checkout');
 
 // --- Authenticated User Routes ---
 Route::middleware('auth')->group(function () {
-    // === THIS IS THE KEY CHANGE ===
-    // Use the new controller instead of the Livewire component
+    Route::get('/checkout', Checkout::class)->name('checkout');
+    // Corrected the typo below from Route. to Route::
     Route::get('/my-orders', OrderStatusController::class)->name('order.status');
-    // =============================
 });
-
 
 // --- Admin Routes ---
 Route::middleware(['auth', 'admin'])->group(function () {
@@ -39,4 +35,10 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// --- Super Admin Routes ---
+Route::middleware(['auth', 'super.admin'])->group(function () {
+    Route::get('/super-admin', SuperAdminDashboard::class)->name('super.admin.dashboard');
+});
+
+// --- Authentication Routes ---
 require __DIR__.'/auth.php';
